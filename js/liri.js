@@ -1,69 +1,109 @@
-// At the top of the `liri.js` file, add code to read and set any environment variables with the dotenv package:
+const dotEnv = require('dotenv').config();
+const keys = require('./keys.js')
+const spotify = require('node-spotify-api')
+const request = require('request')
+const omdb = require('omdb')
+const fs = require('fs')
+const spotify = new spotify(keys.spotify);
+var moment = require('moment');
 
-// ```js
-// require("dotenv").config();
-// ```
+let [one, two, command, ...input] = process.argv;
+console.log(command);
 
-// Add the code required to import the `keys.js` file and store it in a variable.
-  
-// * You should then be able to access your keys information like so
+input = input.join(" ")
 
-//   ```js
-//   var spotify = new Spotify(keys.spotify);
-//   ```
+switch (command) {
 
-
-require("dotenv").config();
-
-var request = require('request');
-var spotify = require('node-spotify-api');
-
-var spotify = new spotify({
-    id: 'fe0e9fe990ff4a36ac680831cd73d544',
-    secret: '618671f431894aff81056ad60e972348',
-});
-
-var keys = require('./keys.js');
+    case "spotfy-this-song":
+        console.log("this song is amazing")
+        spotify_this(input);
+        break
+    case "movie-this":
+        console.log("Cool movie!")
+        movie_this(input);
+        break
+    case "do-what-it-says":
+        console.log("do the fandango")
+        grabText();
+        break
+}
 
 
-// here will need to get the concert app working
-// using an if statement and the process.argv[] and making it equal to the concert
+function spotify_this(input) {
+    var song;
+    if (input === "") {
+        song = 'The Sign Ace of Base';
+    } else {
+        song = input;
+    }
+    spotify.search({
+        type: 'track',
+        query: song
+    }, function (err, data) {
+        if (err) {
+            console.log('Retrieval Error' + err);
+            return;
+        }
+        console.log(data.tracks.items[0].album.artists[0].name)
+        console.log(data.tracks.items[0].name)
+        console.log(data.tracks.items[0].external_urls.spotify)
+        console.log(data.tracks.items[0].album.name)
+    });
+};
+
+"concert-this": function (str) {
+    axios.get('https://rest.bandsintown.com/artist/' + str + '/events?app_id=codingbootcamp')
+        .then(function (response) {
+            console.log('Venue Name: ' + response.data[0].venue.name);
+            console.log('Venue Location: ' + response.data[0].venue.city + ", " + response.data[0].venue.country);
+            console.log('Event Date: ' + moment(response.data[0].datetime).format("MM/DD/YYY"));
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+},
+
+function movie_this(inputs) {
+    var queryUrl = "http://www.omdbapi.com/?t=" + inputs + "&y=&plot=short&apikey=a88d7e6c";
+
+    request(queryUrl, function (error, response, body) {
+        if (!inputs) {
+            inputs = 'Mr Nobody';
+        }
+        if (!error && response.statusCode === 200) {
+
+            console.log("Title: " + JSON.parse(body).Title);
+            console.log("Release Year: " + JSON.parse(body).Year);
+            console.log("IMDB Rating: " + JSON.parse(body).imdbRating);
+            console.log("Rotten Tomatoes Rating: " + JSON.parse(body).Ratings[1].Value);
+            console.log("Country: " + JSON.parse(body).Country);
+            console.log("Language: " + JSON.parse(body).Language);
+            console.log("Plot: " + JSON.parse(body).Plot);
+            console.log("Actors: " + JSON.parse(body).Actors);
+        }
+    });
+};
+
+function grabText() {
+    fs.readFile("random.txt", "utf8", function (error, data) {
+        if (error) {
+            return console.log(error);
+        }
+        console.log(data);
+        var song = data.split(", ")[1];
+        spotify_this(song);
+    })
+}
+
 if (process.argv[2] === "concert-this") {
     var artistName = process.argv.slice(3).join(' ');
 
-request('//bandsintown...' + name + 'event'
-    function (error, response, art) {
-        var shows = JSON.parse(art)
-        console.dir(shows[0].venue.name);
-        console.dir(shows[0].venue.city);
-        console.dir(shows[0].venue.country);
-        console.dir(shows[0].datetime);
-    });
+    request('https://rest.bandsintown.com/artists/' + artistName + '/events?app_id=codingbootcamp=upcoming',
+        function (error, response, art) {
+            var shows = JSON.parse(art)
+            console.dir(shows[0].venue.name);
+            console.dir(shows[0].venue.city);
+            console.dir(shows[0].venue.country);
+            console.dir(shows[0].datetime);
+        });
 };
-// you'll need to make a variable for the artists name within the if statement. this will be the process.argv.slice().join('');
-
-if (process.argv[2] === "movie-this") {
-    var = movieName process.argv.slice(3).join(' ');
-
-    request('' + movieName + '',
-        function (error, response, picture) {
-            var movieInfo = JSON.parse(picture)
-            console.dir(movieInfo.Title);
-            console.dir(movieInfo.Year);
-            console.dir(movieInfo.imdbRating);
-            console.dir(movieInfo.Ratings);
-            console.dir(movieInfo.Country);
-            console.dir(movieInfo.Language);
-            console.dir(movieInfo.Plot);
-            console.dir(movieInfo.Actors);
-            if (process.argv.length = 3) {
-                return movieInfo = 'Mr. Nobody'
-            }
-        })
-};
-
-// then request the url + the srtists name + the event
-    // then a function with err, res, art{
-        // then var shows = json.p;arse
-    // }
-
