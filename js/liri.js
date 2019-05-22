@@ -51,17 +51,17 @@ function spotify_this(input) {
     });
 };
 
-"concert-this": function (str) {
-    axios.get('https://rest.bandsintown.com/artist/' + str + '/events?app_id=codingbootcamp')
-        .then(function (response) {
-            console.log('Venue Name: ' + response.data[0].venue.name);
-            console.log('Venue Location: ' + response.data[0].venue.city + ", " + response.data[0].venue.country);
-            console.log('Event Date: ' + moment(response.data[0].datetime).format("MM/DD/YYY"));
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
-},
+// "concert-this": function () {
+//     axios.get('https://rest.bandsintown.com/artist/' + str + '/events?app_id=codingbootcamp')
+//         .then(function (response) {
+//             console.log('Venue Name: ' + response.data[0].venue.name);
+//             console.log('Venue Location: ' + response.data[0].venue.city + ", " + response.data[0].venue.country);
+//             console.log('Event Date: ' + moment(response.data[0].datetime).format("MM/DD/YYY"));
+//         })
+//         .catch(function (error) {
+//             console.log(error);
+//         });
+// },
 
 function movie_this(inputs) {
     var queryUrl = "http://www.omdbapi.com/?t=" + inputs + "&y=&plot=short&apikey=a88d7e6c";
